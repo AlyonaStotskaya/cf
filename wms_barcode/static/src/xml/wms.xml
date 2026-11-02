@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="wms_barcode.Home">
+        <div class="wms-screen">
+            <div class="wms-bar">
+                <b>Barcode</b>
+                <span class="wms-hint">Scan a transfer barcode or pick an operation</span>
+            </div>
+            <div t-if="state.msg" class="wms-msg wms-err" t-esc="state.msg"/>
+            <div class="wms-cards">
+                <t t-foreach="state.types" t-as="t" t-key="t.id">
+                    <button class="wms-card" t-on-click="() => this.openType(t)">
+                        <div class="wms-card-name" t-esc="t.name"/>
+                        <div class="wms-card-count"><t t-esc="t.count"/> ready</div>
+                        <div t-if="t.late" class="wms-late"><t t-esc="t.late"/> late</div>
+                    </button>
+                </t>
+            </div>
+            <div t-if="state.current" class="wms-list">
+                <h4 t-esc="state.current.name"/>
+                <t t-foreach="state.list" t-as="p" t-key="p.id">
+                    <div class="wms-row" t-on-click="() => this.openPicking(p.id)">
+                        <b t-esc="p.name"/> <span t-esc="p.partner"/> <small t-esc="p.date"/>
+                    </div>
+                </t>
+                <div t-if="!state.list.length" class="wms-hint">Nothing to do.</div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="wms_barcode.Picking">
+        <div class="wms-screen">
+            <div class="wms-bar">
+                <button class="btn btn-light" t-on-click="close">&#8592;</button>
+                <b t-esc="state.picking.name"/>
+                <span class="wms-hint" t-esc="state.picking.partner"/>
+                <span t-if="state.ctx.location_name" class="badge text-bg-info">
+                    <t t-esc="state.ctx.location_name"/>
+                    <a href="#" t-on-click.prevent="clearContext">&#215;</a>
+                </span>
+                <span t-if="state.ctx.await_lot" class="badge text-bg-warning">Scan lot/serial</span>
+            </div>
+            <div t-if="state.msg" t-attf-class="wms-msg {{state.ok ? 'wms-ok' : 'wms-err'}}" t-esc="state.msg"/>
+            <input class="form-control wms-input" data-wms-scan="1" placeholder="Scan or type barcode, Enter"
+                   t-model="state.manual" t-on-keydown="manualScan"/>
+            <table class="table wms-lines">
+                <thead><tr><th>Product</th><th>From</th><th>To</th><th class="text-end">Done / Demand</th></tr></thead>
+                <tbody>
+                    <t t-foreach="state.picking.lines" t-as="l" t-key="l.id">
+                        <tr t-att-class="lineClass(l)">
+                            <td>
+                                <b t-esc="l.product"/>
+                                <div t-if="l.lots.length" class="wms-hint" t-esc="l.lots.join(', ')"/>
+                            </td>
+                            <td t-esc="l.locations.join(', ')"/>
+                            <td t-esc="l.dest.join(', ')"/>
+                            <td class="text-end"><b t-esc="l.done"/> / <t t-esc="l.demand"/> <t t-esc="l.uom"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <div class="wms-footer">
+                <button class="btn btn-primary btn-lg" t-on-click="validate">Validate</button>
+            </div>
+        </div>
+    </t>
+</templates>

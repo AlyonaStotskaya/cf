@@ -1,0 +1,16 @@
+.wms-screen { padding: 12px; max-width: 900px; margin: 0 auto; }
+.wms-bar { display: flex; gap: 12px; align-items: center; padding: 8px 0; }
+.wms-hint { color: #6c757d; font-size: .85em; }
+.wms-msg { padding: 8px 12px; border-radius: 6px; margin: 8px 0; font-weight: 600; }
+.wms-ok { background: #d1e7dd; }
+.wms-err { background: #f8d7da; }
+.wms-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.wms-card { text-align: left; padding: 14px; border: 1px solid #ccc; border-radius: 8px; background: #fff; }
+.wms-card-count { font-size: 1.4em; font-weight: 700; }
+.wms-late { color: #dc3545; }
+.wms-row { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+.wms-input { margin: 8px 0; font-size: 1.2em; }
+.wms-lines .wms-done { background: #d1e7dd; }
+.wms-lines .wms-partial { background: #fff3cd; }
+.wms-lines .wms-over { background: #f8d7da; }
+.wms-footer { position: sticky; bottom: 0; padding: 10px 0; background: #fff; }

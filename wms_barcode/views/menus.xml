@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_wms_root" name="Barcode" sequence="55"
+              action="action_wms_home" groups="stock.group_stock_user"/>
+    <menuitem id="menu_wms_scan_log" name="Scan log" parent="stock.menu_warehouse_report"
+              action="action_wms_scan_log" groups="stock.group_stock_manager" sequence="90"/>
+</odoo>

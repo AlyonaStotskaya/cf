@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wms_scan_log_list" model="ir.ui.view">
+        <field name="name">wms.scan.log.list</field>
+        <field name="model">wms.scan.log</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" decoration-danger="not ok">
+                <field name="create_date"/>
+                <field name="user_id"/>
+                <field name="picking_id"/>
+                <field name="barcode"/>
+                <field name="result_type"/>
+                <field name="ok"/>
+                <field name="message"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_wms_scan_log" model="ir.actions.act_window">
+        <field name="name">Scan log</field>
+        <field name="res_model">wms.scan.log</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>
