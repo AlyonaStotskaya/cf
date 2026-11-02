@@ -1,17 +1,24 @@
 import { Component, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { WmsCamera } from "./camera";
 import { useScanner, beep } from "./scan_input";
 
 export class WmsInventory extends Component {
     static template = "wms_barcode.Inventory";
     static props = ["*"];
 
+    static components = { WmsCamera };
+
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ data: null, ctx: {}, msg: "Scan a location to start", ok: true, manual: "" });
+        this.state = useState({ data: null, ctx: {}, msg: "Scan a location to start", ok: true, manual: "", camera: false });
         useScanner((code) => this.scan(code));
+    }
+
+    toggleCamera() {
+        this.state.camera = !this.state.camera;
     }
 
     async scan(code) {

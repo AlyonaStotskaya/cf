@@ -1,21 +1,28 @@
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { WmsCamera } from "./camera";
 import { useScanner, beep } from "./scan_input";
 
 export class WmsPicking extends Component {
     static template = "wms_barcode.Picking";
     static props = ["*"];
 
+    static components = { WmsCamera };
+
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.pickingId = this.props.action.params.picking_id;
-        this.state = useState({ picking: null, ctx: {}, msg: "", ok: true, manual: "" });
+        this.state = useState({ picking: null, ctx: {}, msg: "", ok: true, manual: "", camera: false });
         onWillStart(async () => {
             this.state.picking = await this.orm.call("stock.picking", "wms_picking_data", [[this.pickingId]]);
         });
         useScanner((code) => this.scan(code));
+    }
+
+    toggleCamera() {
+        this.state.camera = !this.state.camera;
     }
 
     async scan(code) {

@@ -45,6 +45,8 @@
                 <span t-if="state.ctx.await_lot" class="badge text-bg-warning">Scan lot/serial</span>
             </div>
             <div t-if="state.msg" t-attf-class="wms-msg {{state.ok ? 'wms-ok' : 'wms-err'}}" t-esc="state.msg"/>
+            <button class="btn btn-light" t-on-click="toggleCamera" title="Camera">&#128247;</button>
+            <WmsCamera t-if="state.camera" onScan.bind="scan" onClose.bind="toggleCamera"/>
             <input class="form-control wms-input" data-wms-scan="1" placeholder="Scan or type barcode, Enter"
                    t-model="state.manual" t-on-keydown="manualScan"/>
             <table class="table wms-lines">
@@ -79,6 +81,8 @@
                 <span t-if="state.ctx.await_lot" class="badge text-bg-warning">Scan lot/serial</span>
             </div>
             <div t-attf-class="wms-msg {{state.ok ? 'wms-ok' : 'wms-err'}}" t-esc="state.msg"/>
+            <button class="btn btn-light" t-on-click="toggleCamera" title="Camera">&#128247;</button>
+            <WmsCamera t-if="state.camera" onScan.bind="scan" onClose.bind="toggleCamera"/>
             <input class="form-control wms-input" data-wms-scan="1" placeholder="Scan or type barcode, Enter"
                    t-model="state.manual" t-on-keydown="manualScan"/>
             <table t-if="state.data" class="table wms-lines">
@@ -99,6 +103,14 @@
                 <button class="btn btn-primary btn-lg" t-on-click="apply">Apply</button>
                 <button class="btn btn-secondary btn-lg" t-on-click="reset">Clear counts</button>
             </div>
+        </div>
+    </t>
+
+    <t t-name="wms_barcode.Camera">
+        <div class="wms-camera">
+            <div t-if="state.error" class="wms-msg wms-err" t-esc="state.error"/>
+            <video t-ref="video" playsinline="playsinline" muted="muted"/>
+            <button class="btn btn-secondary" t-on-click="props.onClose">Close camera</button>
         </div>
     </t>
 </templates>
