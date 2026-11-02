@@ -52,6 +52,17 @@ export class WmsPicking extends Component {
         return l.done > 0 ? "wms-partial" : "";
     }
 
+    async createWave() {
+        const id = await this.orm.call("stock.picking", "wms_create_wave",
+            [[this.pickingId], this.state.ctx.location_id || false]);
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "wms_barcode_batch",
+            params: { batch_id: id },
+            target: "fullscreen",
+        });
+    }
+
     async validate() {
         const res = await this.orm.call("stock.picking", "wms_validate", [[this.pickingId]]);
         if (res && res !== true) {

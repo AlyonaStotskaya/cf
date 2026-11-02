@@ -18,4 +18,17 @@
         <field name="tag">wms_barcode_home</field>
         <field name="target">fullscreen</field>
     </record>
+
+    <record id="view_picking_batch_form_wms" model="ir.ui.view">
+        <field name="name">stock.picking.batch.form.wms</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_open_wms" type="object" string="Scan"
+                        class="btn-secondary" icon="fa-barcode"
+                        invisible="state in ('done', 'cancel')"/>
+            </header>
+        </field>
+    </record>
 </odoo>

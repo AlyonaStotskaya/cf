@@ -3,7 +3,7 @@
     "version": "19.0.1.0.0",
     "category": "Inventory/Inventory",
     "summary": "Warehouse barcode scanning for Odoo 19 Community: receipts, picks, transfers",
-    "depends": ["stock", "barcodes"],
+    "depends": ["stock", "stock_picking_batch", "barcodes"],
     "data": [
         "security/ir.model.access.csv",
         "views/stock_picking_views.xml",

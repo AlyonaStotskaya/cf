@@ -254,6 +254,26 @@ class StockPicking(models.Model):
         else:
             raise UserError(_("Lot/Serial %s does not exist.", lot_name))
 
+    def wms_create_wave(self, location_id=False):
+        """Create a wave from not-yet-picked lines (optionally only from one zone)."""
+        self.ensure_one()
+        lines = self.move_line_ids.filtered(lambda l: not l.picked)
+        if location_id:
+            loc = self.env["stock.location"].browse(location_id)
+            lines = lines.filtered(lambda l: l.location_id.parent_path.startswith(loc.parent_path))
+        if not lines:
+            raise UserError(_("No lines to put in a wave."))
+        if hasattr(lines, "_add_to_wave"):
+            action = lines._add_to_wave()
+            wave = self.env["stock.picking.batch"].search([("is_wave", "=", True)],
+                                                           order="id desc", limit=1)
+        else:
+            wave = self.env["stock.picking.batch"].create({
+                "is_wave": True, "picking_ids": [(6, 0, lines.picking_id.ids)],
+                "picking_type_id": self.picking_type_id.id,
+                "company_id": self.company_id.id})
+        return wave.id
+
     def wms_validate(self):
         self.ensure_one()
         if not self.move_line_ids.filtered("picked"):

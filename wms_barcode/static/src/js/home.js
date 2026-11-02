@@ -10,9 +10,10 @@ export class WmsHome extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ types: [], list: [], current: null, msg: "" });
+        this.state = useState({ types: [], list: [], current: null, msg: "", counts: { batch: 0, wave: 0 }, batches: null, batchTitle: "" });
         onWillStart(async () => {
             this.state.types = await this.orm.call("stock.picking", "wms_home_data", []);
+            this.state.counts = await this.orm.call("stock.picking.batch", "wms_home_counts", []);
         });
         useScanner((code) => this.onScan(code));
     }
@@ -38,6 +39,21 @@ export class WmsHome extends Component {
             type: "ir.actions.client",
             tag: "wms_barcode_picking",
             params: { picking_id: id },
+            target: "fullscreen",
+        });
+    }
+
+    async openBatches(isWave) {
+        this.state.current = null;
+        this.state.batchTitle = isWave ? "Waves" : "Batches";
+        this.state.batches = await this.orm.call("stock.picking.batch", "wms_list", [isWave]);
+    }
+
+    openBatch(id) {
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "wms_barcode_batch",
+            params: { batch_id: id },
             target: "fullscreen",
         });
     }
