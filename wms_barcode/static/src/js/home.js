@@ -42,6 +42,10 @@ export class WmsHome extends Component {
         });
     }
 
+    openInventory() {
+        this.action.doAction({ type: "ir.actions.client", tag: "wms_barcode_inventory", target: "fullscreen" });
+    }
+
     back() {
         this.action.restore ? this.action.restore() : this.action.doAction("stock.action_picking_tree_all");
     }

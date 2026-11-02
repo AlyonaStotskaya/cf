@@ -8,6 +8,10 @@
             </div>
             <div t-if="state.msg" class="wms-msg wms-err" t-esc="state.msg"/>
             <div class="wms-cards">
+                <button class="wms-card" t-on-click="openInventory">
+                    <div class="wms-card-name">Inventory</div>
+                    <div class="wms-hint">Count by scanning</div>
+                </button>
                 <t t-foreach="state.types" t-as="t" t-key="t.id">
                     <button class="wms-card" t-on-click="() => this.openType(t)">
                         <div class="wms-card-name" t-esc="t.name"/>
@@ -61,6 +65,38 @@
             </table>
             <div class="wms-footer">
                 <button class="btn btn-primary btn-lg" t-on-click="validate">Validate</button>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="wms_barcode.Inventory">
+        <div class="wms-screen">
+            <div class="wms-bar">
+                <button class="btn btn-light" t-on-click="close">&#8592;</button>
+                <b>Inventory</b>
+                <span t-if="state.ctx.location_name" class="badge text-bg-info" t-esc="state.ctx.location_name"/>
+                <span t-if="state.ctx.await_lot" class="badge text-bg-warning">Scan lot/serial</span>
+            </div>
+            <div t-attf-class="wms-msg {{state.ok ? 'wms-ok' : 'wms-err'}}" t-esc="state.msg"/>
+            <input class="form-control wms-input" data-wms-scan="1" placeholder="Scan or type barcode, Enter"
+                   t-model="state.manual" t-on-keydown="manualScan"/>
+            <table t-if="state.data" class="table wms-lines">
+                <thead><tr><th>Product</th><th>Lot</th><th>Package</th>
+                    <th class="text-end">On hand</th><th class="text-end">Counted</th><th class="text-end">Diff</th></tr></thead>
+                <tbody>
+                    <t t-foreach="state.data.lines" t-as="l" t-key="l.id">
+                        <tr t-att-class="l.counted === null ? '' : (diff(l) === 0 ? 'wms-done' : 'wms-over')">
+                            <td t-esc="l.product"/><td t-esc="l.lot"/><td t-esc="l.package"/>
+                            <td class="text-end" t-esc="l.on_hand"/>
+                            <td class="text-end" t-esc="l.counted === null ? '-' : l.counted"/>
+                            <td class="text-end" t-esc="diff(l)"/>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <div t-if="state.data" class="wms-footer">
+                <button class="btn btn-primary btn-lg" t-on-click="apply">Apply</button>
+                <button class="btn btn-secondary btn-lg" t-on-click="reset">Clear counts</button>
             </div>
         </div>
     </t>
