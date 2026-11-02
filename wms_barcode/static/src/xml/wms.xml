@@ -54,6 +54,7 @@
                         <tr t-att-class="lineClass(l)">
                             <td>
                                 <b t-esc="l.product"/>
+                                <div t-if="l.description" class="wms-hint" t-esc="l.description"/>
                                 <div t-if="l.lots.length" class="wms-hint" t-esc="l.lots.join(', ')"/>
                             </td>
                             <td t-esc="l.locations.join(', ')"/>

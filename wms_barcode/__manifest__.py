@@ -8,6 +8,7 @@
         "security/ir.model.access.csv",
         "views/stock_picking_views.xml",
         "views/wms_scan_log_views.xml",
+        "views/wms_config_views.xml",
         "views/menus.xml",
     ],
     "assets": {

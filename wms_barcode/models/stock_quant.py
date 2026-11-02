@@ -55,7 +55,11 @@ class StockQuant(models.Model):
             ctx.pop("pending_product", None)
             return {"type": "location", "ctx": ctx, "message": _("Location: %s", loc.display_name)}
         if not ctx.get("location_id"):
-            raise UserError(_("Scan a location first."))
+            default = self.env["wms.config"].get_config().inv_location_id
+            if default:
+                ctx.update(location_id=default.id, location_name=default.display_name)
+            else:
+                raise UserError(_("Scan a location first."))
         if kind == "package":
             ctx["package_id"] = r["record"].id
             return {"type": "package", "ctx": ctx, "message": _("Package: %s", r["record"].name)}
@@ -97,7 +101,12 @@ class StockQuant(models.Model):
         if quant:
             if product.tracking == "serial" and quant.inventory_quantity_set:
                 raise UserError(_("Serial %s already counted.", lot_name))
-            new = quant.inventory_quantity + qty if quant.inventory_quantity_set else qty
+            if quant.inventory_quantity_set:
+                new = quant.inventory_quantity + qty
+            elif self.env["wms.config"].get_config().inv_start_zero:
+                new = qty
+            else:
+                new = quant.quantity + qty
             quant.write({"inventory_quantity": new, "inventory_quantity_set": True})
         else:
             Quant.create({

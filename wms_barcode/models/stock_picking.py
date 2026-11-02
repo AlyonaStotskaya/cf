@@ -36,6 +36,7 @@ class StockPicking(models.Model):
     def wms_picking_data(self):
         self.ensure_one()
         lines = []
+        cfg = self.env["wms.config"].get_config()
         for move in self.move_ids.filtered(lambda m: m.state != "cancel"):
             mls = move.move_line_ids
             lines.append({
@@ -50,6 +51,7 @@ class StockPicking(models.Model):
                 "uom": move.product_uom.display_name,
                 "locations": sorted({(l.location_id.display_name) for l in mls}),
                 "dest": sorted({(l.location_dest_id.display_name) for l in mls}),
+                "description": (move.product_id.description_picking or "") if cfg.show_description else "",
                 "lots": [l.lot_id.name or l.lot_name for l in mls
                          if (l.lot_id or l.lot_name) and l.picked],
             })
@@ -189,6 +191,21 @@ class StockPicking(models.Model):
         if code == "incoming" and loc_id:
             line.location_dest_id = loc_id
 
+        cfg = self.env["wms.config"].get_config()
+        if code == "internal" and cfg.forbid_over_stock:
+            on_hand = sum(self.env["stock.quant"].search([
+                ("product_id", "=", product.id), ("location_id", "child_of", line.location_id.id),
+                ("lot_id", "=", line.lot_id.id or False)]).mapped("quantity"))
+            picked = sum(self.move_line_ids.filtered(lambda l: l.picked and l.product_id == product
+                         and l.location_id == line.location_id
+                         and l.lot_id == line.lot_id).mapped("quantity"))
+            if float_compare(picked, on_hand, precision_rounding=uom_prec) > 0:
+                line.quantity -= qty
+                if float_is_zero(line.quantity, precision_rounding=uom_prec):
+                    line.picked = False
+                raise UserError(_("Only %s of %s in stock at %s.", on_hand,
+                                  product.display_name, line.location_id.display_name))
+
         warning = ""
         done = sum(moves.move_line_ids.filtered("picked").mapped("quantity"))
         demand = sum(moves.mapped("product_uom_qty"))
@@ -223,6 +240,14 @@ class StockPicking(models.Model):
             ("name", "=", lot_name), ("product_id", "=", product.id),
             ("company_id", "=", self.company_id.id)], limit=1)
         if lot:
+            if self.env["wms.config"].get_config().lots_only_source and \
+                    self.picking_type_id.code != "incoming":
+                qty = sum(self.env["stock.quant"].search([
+                    ("lot_id", "=", lot.id),
+                    ("location_id", "child_of", line.location_id.id)]).mapped("quantity"))
+                if qty <= 0:
+                    raise UserError(_("Lot %s has no stock in %s.", lot_name,
+                                      line.location_id.display_name))
             line.lot_id = lot
         elif self.picking_type_id.use_create_lots:
             line.lot_name = lot_name

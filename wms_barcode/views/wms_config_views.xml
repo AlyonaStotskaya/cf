@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wms_config_form" model="ir.ui.view">
+        <field name="name">wms.config.form</field>
+        <field name="model">wms.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group string="Transfers">
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="lots_only_source"/>
+                        <field name="show_description"/>
+                        <field name="forbid_over_stock"/>
+                    </group>
+                    <group string="Inventory">
+                        <field name="inv_start_zero"/>
+                        <field name="inv_location_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_wms_config" model="ir.actions.act_window">
+        <field name="name">Barcode settings</field>
+        <field name="res_model">wms.config</field>
+        <field name="view_mode">form</field>
+    </record>
+    <record id="wms_config_default" model="wms.config">
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+</odoo>

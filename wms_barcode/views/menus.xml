@@ -4,4 +4,6 @@
               action="action_wms_home" groups="stock.group_stock_user"/>
     <menuitem id="menu_wms_scan_log" name="Scan log" parent="stock.menu_warehouse_report"
               action="action_wms_scan_log" groups="stock.group_stock_manager" sequence="90"/>
+    <menuitem id="menu_wms_config" name="Barcode settings" parent="stock.menu_stock_config_settings"
+              action="action_wms_config" groups="stock.group_stock_manager" sequence="95"/>
 </odoo>
